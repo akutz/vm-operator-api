@@ -1,9 +1,9 @@
 module github.com/vmware-tanzu/vm-operator-api/hack/tools
 
-go 1.17
+go 1.18
 
 require (
-	github.com/golangci/golangci-lint v1.46.2
+	github.com/golangci/golangci-lint v1.48.0
 	sigs.k8s.io/controller-tools v0.9.2
 )
 

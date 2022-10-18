@@ -1,12 +1,11 @@
 // Copyright (c) 2022 VMware, Inc. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-package v1alpha1
+package v1alpha2
 
 import (
 	"time"
 
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -245,12 +244,12 @@ type VirtualMachinePublishRequestStatus struct {
 	// request's current state.
 	//
 	// +optional
-	Conditions []Condition `json:"conditions,omitempty"`
+	Conditions []metav1.Condition `json:"conditions,omitempty"`
 }
 
 func (vmpr VirtualMachinePublishRequest) getCondition(
-	conditionType ConditionType,
-) *Condition {
+	conditionType string,
+) *metav1.Condition {
 
 	for i := range vmpr.Status.Conditions {
 		c := &vmpr.Status.Conditions[i]
@@ -266,7 +265,7 @@ func (vmpr VirtualMachinePublishRequest) getCondition(
 // and Status=True.
 func (vmpr VirtualMachinePublishRequest) IsSourceValid() bool {
 	c := vmpr.getCondition(VirtualMachinePublishRequestConditionSourceValid)
-	if c != nil && c.Status == corev1.ConditionTrue {
+	if c != nil && c.Status == metav1.ConditionTrue {
 		return true
 	}
 	return false
@@ -276,7 +275,7 @@ func (vmpr VirtualMachinePublishRequest) IsSourceValid() bool {
 // Type=TargetValid and Status=True.
 func (vmpr VirtualMachinePublishRequest) IsTargetValid() bool {
 	c := vmpr.getCondition(VirtualMachinePublishRequestConditionTargetValid)
-	if c != nil && c.Status == corev1.ConditionTrue {
+	if c != nil && c.Status == metav1.ConditionTrue {
 		return true
 	}
 	return false
@@ -293,7 +292,7 @@ func (vmpr VirtualMachinePublishRequest) IsTargetValid() bool {
 // VirtualMachineImage resource has been realized.
 func (vmpr VirtualMachinePublishRequest) IsComplete() bool {
 	c := vmpr.getCondition(VirtualMachinePublishRequestConditionComplete)
-	if c != nil && c.Status == corev1.ConditionTrue {
+	if c != nil && c.Status == metav1.ConditionTrue {
 		return !vmpr.Status.CompletionTime.IsZero()
 	}
 	return false
@@ -303,7 +302,7 @@ func (vmpr VirtualMachinePublishRequest) IsComplete() bool {
 // Type=ImageAvailable and Status=True.
 func (vmpr VirtualMachinePublishRequest) IsImageAvailable() bool {
 	c := vmpr.getCondition(VirtualMachinePublishRequestConditionImageAvailable)
-	if c != nil && c.Status == corev1.ConditionTrue {
+	if c != nil && c.Status == metav1.ConditionTrue {
 		return true
 	}
 	return false
@@ -317,15 +316,15 @@ func (vmpr VirtualMachinePublishRequest) IsImageAvailable() bool {
 // resource to be realized.
 func (vmpr VirtualMachinePublishRequest) IsUploaded() bool {
 	c := vmpr.getCondition(VirtualMachinePublishRequestConditionUploaded)
-	if c != nil && c.Status == corev1.ConditionTrue {
+	if c != nil && c.Status == metav1.ConditionTrue {
 		return true
 	}
 	return false
 }
 
 func (vmpr *VirtualMachinePublishRequest) markCondition(
-	conditionType ConditionType,
-	status corev1.ConditionStatus,
+	conditionType string,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	var (
@@ -338,7 +337,7 @@ func (vmpr *VirtualMachinePublishRequest) markCondition(
 	if len(args) > 1 {
 		message = args[1]
 	}
-	if reason == "" && status == corev1.ConditionTrue {
+	if reason == "" && status == metav1.ConditionTrue {
 		reason = VirtualMachinePublishRequestConditionSuccess
 	} else {
 		reason = string(status)
@@ -357,7 +356,7 @@ func (vmpr *VirtualMachinePublishRequest) markCondition(
 	}
 	vmpr.Status.Conditions = append(
 		vmpr.Status.Conditions,
-		Condition{
+		metav1.Condition{
 			Type:               conditionType,
 			Message:            message,
 			Reason:             reason,
@@ -389,13 +388,13 @@ func (vmpr *VirtualMachinePublishRequest) markCondition(
 //
 // If no message is provided then it is set to an empty string.
 func (vmpr *VirtualMachinePublishRequest) MarkComplete(
-	status corev1.ConditionStatus,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	switch status {
-	case corev1.ConditionTrue:
+	case metav1.ConditionTrue:
 		vmpr.Status.CompletionTime = metav1.NewTime(time.Now().UTC())
-	case corev1.ConditionFalse, corev1.ConditionUnknown:
+	case metav1.ConditionFalse, metav1.ConditionUnknown:
 		vmpr.Status.CompletionTime = metav1.Time{}
 	}
 
@@ -409,7 +408,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkComplete(
 	// the VirtualMachinePublishRequest resource should be marked
 	// ready.
 	for _, c := range vmpr.Status.Conditions {
-		if c.Status != corev1.ConditionTrue {
+		if c.Status != metav1.ConditionTrue {
 			vmpr.Status.Ready = false
 			return
 		}
@@ -430,7 +429,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkComplete(
 //
 // If no message is provided then it is set to an empty string.
 func (vmpr *VirtualMachinePublishRequest) MarkSourceValid(
-	status corev1.ConditionStatus,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	vmpr.markCondition(
@@ -453,7 +452,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkSourceValid(
 //
 // If no message is provided then it is set to an empty string.
 func (vmpr *VirtualMachinePublishRequest) MarkTargetValid(
-	status corev1.ConditionStatus,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	vmpr.markCondition(
@@ -476,7 +475,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkTargetValid(
 //
 // If no message is provided then it is set to an empty string.
 func (vmpr *VirtualMachinePublishRequest) MarkImageAvailable(
-	status corev1.ConditionStatus,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	vmpr.markCondition(
@@ -498,7 +497,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkImageAvailable(
 //
 // If no message is provided then it is set to an empty string.
 func (vmpr *VirtualMachinePublishRequest) MarkUploaded(
-	status corev1.ConditionStatus,
+	status metav1.ConditionStatus,
 	args ...string,
 ) {
 	vmpr.markCondition(
@@ -510,6 +509,7 @@ func (vmpr *VirtualMachinePublishRequest) MarkUploaded(
 
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Namespaced,shortName=vmpub
+// +kubebuilder:storageversion
 // +kubebuilder:subresource:status
 
 // VirtualMachinePublishRequest defines the information necessary to publish a

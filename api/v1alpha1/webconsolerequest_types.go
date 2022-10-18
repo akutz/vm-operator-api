@@ -25,7 +25,6 @@ type WebConsoleRequestStatus struct {
 
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Namespaced
-// +kubebuilder:storageversion
 // +kubebuilder:subresource:status
 
 // WebConsoleRequest allows the creation of a one-time web console ticket that can be used to interact with the VM.

@@ -15,6 +15,8 @@ words:
   - Cloudbase
   - cloudinit
   - clustermodules
+  - clustervirtualmachineimages
+  - clustervmimage
   - commmands
   - contentlibraryproviders
   - contentsources
@@ -29,6 +31,7 @@ words:
   - envtest
   - expiredate
   - faillog
+  - finalizers
   - gecos
   - GOARCH
   - golangci
@@ -56,6 +59,7 @@ words:
   - mykey
   - nolint
   - openapi
+  - OSID
   - Prereq
   - prereqs
   - printcolumn
@@ -66,6 +70,7 @@ words:
   - runcmd
   - shellcheck
   - snapuser
+  - SRIOV
   - storageVersion
   - stylecheck
   - subnetmask
@@ -85,19 +90,25 @@ words:
   - VGPU
   - virtualmachineclasses
   - virtualmachinedefaults
+  - virtualmachinedeployments
   - virtualmachineimages
+  - virtualmachinereplicasets
   - virtualmachines
   - virtualmachineservices
   - virtualmachinesetresourcepolicies
   - vmclass
   - vmclassbinding
+  - vmdefault
   - vmdefaults
+  - vmdeployment
   - vmimage
   - VMIP
   - Vmop
   - vmoperator
   - vmpr
   - vmpub
+  - vmreplicaset
+  - vmrs
   - vmservice
   - VMTX
   - workdir

@@ -63,7 +63,7 @@ generate: ## Run all code generation targets
 .PHONY: generate-go
 generate-go: $(CONTROLLER_GEN) ## Runs Go related generate targets
 	$(CONTROLLER_GEN) \
-		paths=./api/... \
+		paths='./api/...' \
 		object:headerFile="$(abspath hack/boilerplate/boilerplate.go.txt)"
 ifneq (0,$(GENERATE_CODE))
 	go generate ./...
